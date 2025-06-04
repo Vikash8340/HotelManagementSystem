@@ -39,7 +39,7 @@ class Cust_Win:
         lblimg = Label(self.root, image=self.photoimg2, bd=0, relief=RIDGE)
         lblimg.place(x=0, y=0, width=130, height=50)
         
-        # =========================== label ====================================
+        # =========================== label frame====================================
         Labelframeleft=LabelFrame(self.root,bd=2,relief=RIDGE,text="Customer Details",font=("times new roman",12,"bold"))
         Labelframeleft.place(x=0,y=50,width=350,height=420)
         
@@ -144,25 +144,27 @@ class Cust_Win:
         
         
         
-        # ================================== table =============================================
+        # ================================== table frame search system =============================================
         Table_Frame=LabelFrame(self.root,bd=2,relief=RIDGE,text="View Details And Search System",font=("arial",12,"bold"),padx=2)
         Table_Frame.place(x=355,y=50,width=860,height=420)
         
         lblSearchBy=Label(Table_Frame,text="Search By",font=("arial",12,"bold"),bg="red",fg="white")
         lblSearchBy.grid(row=0,column=0,sticky=W,padx=2)
         
-        combo_Search=ttk.Combobox(Table_Frame,font=("arial",12,"bold"),width=18,state="readonly")    
+        self.search_var=StringVar()
+        combo_Search=ttk.Combobox(Table_Frame,textvariable=self.search_var,font=("arial",12,"bold"),width=18,state="readonly")    
         combo_Search["value"]=("Mobile","Ref")
         combo_Search.current(0)
         combo_Search.grid(row=0,column=1,padx=2)
         
-        txtSearch=ttk.Entry(Table_Frame,font=("arial",12,"bold"),width=18)
+        self.txt_search=StringVar()
+        txtSearch=ttk.Entry(Table_Frame,textvariable=self.txt_search,font=("arial",12,"bold"),width=18)
         txtSearch.grid(row=0,column=2,padx=2)
         
-        btnSearch=Button(Table_Frame,text="Search",font=("arial",12,"bold"),bg="black",fg="gold",width=10)
+        btnSearch=Button(Table_Frame,text="Search",command=self.search,font=("arial",12,"bold"),bg="black",fg="gold",width=10)
         btnSearch.grid(row=0,column=3,padx=2)
         
-        btnShowAll=Button(Table_Frame,text="Show All",font=("arial",12,"bold"),bg="black",fg="gold",width=10)
+        btnShowAll=Button(Table_Frame,text="Show All",command=self.fetch_data,font=("arial",12,"bold"),bg="black",fg="gold",width=10)
         btnShowAll.grid(row=0,column=4,padx=2)
         
         # =============================== Show Data all ========================================
@@ -341,6 +343,24 @@ class Cust_Win:
       self.var_ref.set(str(x))
 
     def search(self):
+      conn = mysql.connector.connect(
+                host="localhost",
+                username="root",
+                password="Vikash@123",
+                database="management"
+            )
+      my_cursor = conn.cursor()
+      
+      my_cursor.execute("Select * from customer where "+str(self.search_var.get())+"LIKE'%"+str(self.txt_search.get())+"%'")
+      rows=my_cursor.fetchall()
+      if len(rows)!=0:
+        self.Cust_Details_Table.delete(*self.Cust_Details_Table.get_children())
+        for i in rows:
+          self.Cust_Details_Table.insert("",END,values=i)
+        conn.commit() 
+      conn.close()
+          
+      
 
         
         

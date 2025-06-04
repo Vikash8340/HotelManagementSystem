@@ -1,12 +1,22 @@
 from tkinter import *
 from PIL import Image, ImageTk  # Make sure pillow is installed
 from customer import Cust_Win
+from room import Roombooking 
+from details import DetailsRoom
+import random
+import time
+import datetime
+from tkinter import messagebox
+import mysql.connector
 
 class HotelManagementSystem:
     def __init__(self, root):
         self.root = root
         self.root.title("Hotel Management System")
         self.root.geometry("1550x800+0+0")
+        
+        label = Label(self.root, text="Welcome to the Hotel Dashboard", font=("Arial", 20, "bold"))
+        label.pack(pady=50)
         
         # ============================1st image1 ======================================
         img1 = Image.open(r"C:\Users\vikas\OneDrive\Documents\Hotel Management System\Images\image1.png")
@@ -43,16 +53,16 @@ class HotelManagementSystem:
         cust_btn=Button(btn_frame,text='CUSTOMER',command=self.cust_details,width=22,font=("times new roman", 14, "bold"), bg="black", fg="gold",cursor="hand2", bd=0, relief=RIDGE)
         cust_btn.grid(row=0,column=0,pady=1)
         
-        room_btn=Button(btn_frame,text='ROOM',width=22,font=("times new roman", 14, "bold"), bg="black", fg="gold",cursor="hand2", bd=0, relief=RIDGE)
+        room_btn=Button(btn_frame,text='ROOM',command=self.roombooking,width=22,font=("times new roman", 14, "bold"), bg="black", fg="gold",cursor="hand2", bd=0, relief=RIDGE)
         room_btn.grid(row=1,column=0,pady=1)
         
-        details_btn=Button(btn_frame,text='DETAILS',width=22,font=("times new roman", 14, "bold"), bg="black", fg="gold",cursor="hand2", bd=0, relief=RIDGE)
+        details_btn=Button(btn_frame,text='DETAILS',command=self.details_room,width=22,font=("times new roman", 14, "bold"), bg="black", fg="gold",cursor="hand2", bd=0, relief=RIDGE)
         details_btn.grid(row=2,column=0,pady=1)
         
         report_btn=Button(btn_frame,text='REPORT',width=22,font=("times new roman", 14, "bold"), bg="black", fg="gold",cursor="hand2", bd=0, relief=RIDGE)
         report_btn.grid(row=3,column=0,pady=1)
         
-        logout_btn=Button(btn_frame,text='BUTTON',width=22,font=("times new roman", 14, "bold"), bg="black", fg="gold",cursor="hand2", bd=0, relief=RIDGE)
+        logout_btn=Button(btn_frame,text='LOGOUT',command=self.logout,width=22,font=("times new roman", 14, "bold"), bg="black", fg="gold",cursor="hand2", bd=0, relief=RIDGE)
         logout_btn.grid(row=4,column=0,pady=1)
         
         # ================================= right side img ==========================================
@@ -82,7 +92,20 @@ class HotelManagementSystem:
     def cust_details(self):
       self.new_window=Toplevel(self.root)
       self.app=Cust_Win(self.new_window)
-      
+     
+    def roombooking(self):
+        self.new_window=Toplevel(self.root)
+        self.app=Roombooking(self.new_window) 
+        '''
+        Table_Frame=LabelFrame(self.root,bd=2,relief=RIDGE,text="View Details And Search System",font=("arial",12,"bold"),padx=2)
+        Table_Frame.place(x=355,y=250,width=870,height=220)
+      '''
+    def details_room(self):
+        self.new_window=Toplevel(self.root)
+        self.app=DetailsRoom(self.new_window) 
+        
+    def logout(self):
+      self.root.destroy()
 
 
 if __name__ == '__main__':

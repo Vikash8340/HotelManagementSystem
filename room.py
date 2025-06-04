@@ -28,8 +28,8 @@ class Roombooking:
 # ========================= Title =====================================
         lbl_title = Label(self.root, text="ROOM BOOKING DETAILS", font=("times new roman", 18, "bold"), bg="black", fg="gold", bd=4, relief=RIDGE)
         lbl_title.place(x=0,y=0,width=1295,height=50)
-       
-        
+
+              
         # =========================== logo =====================================
         img2 = Image.open(r"C:\Users\vikas\OneDrive\Documents\Hotel Management System\Images\logo1.png")
         img2 = img2.resize((125,50), Image.Resampling.LANCZOS)
@@ -45,7 +45,8 @@ class Roombooking:
         # ================labels and entry =====================================
         # customer contact
         lbl_cust_contact=Label(Labelframeleft,text="Cust. contact:",font=("arial ",12,"bold"),padx=1,pady=3)
-        lbl_cust_contact.grid(row=0,column=0,sticky=W)       
+        lbl_cust_contact.grid(row=0,column=0,sticky=W)   
+            
         entry_contact=ttk.Entry(Labelframeleft,textvariable=self.var_contact,font=("arial",13,"bold"),width=17)
         entry_contact.grid(row=0,column=1,sticky=W)
         
@@ -92,8 +93,7 @@ class Roombooking:
         combo_RoomNo["value"]=rows
         combo_RoomNo.current(0)
         combo_RoomNo.grid(row=4, column=1)
-        
-        
+               
         # Meal
         lbl_Meal=Label(Labelframeleft,text="Meal:",font=("arial ",12,"bold"),padx=1,pady=3)
         lbl_Meal.grid(row=5,column=0,sticky=W)       
@@ -294,15 +294,14 @@ class Roombooking:
                 self.var_roomavailable.get(),
                 self.var_meal.get(),
                 self.var_noofdays.get(),
-                self.var_contact.get()
-                
+                self.var_contact.get()               
                 )) 
       conn.commit()
       self.fetch_data()
       conn.close()
       messagebox.showinfo("Update","Row Details has been updated  successfully",parent=self.root)  
       
-      # Delete
+    # Delete
     def mDelete(self):
       mDelete=messagebox.askyesno("Hotel Management System","Do you want delete this customer",parent=self.root)
       if mDelete>0:
@@ -391,19 +390,7 @@ class Roombooking:
                             
                     lbl=Label(showDataframe,text=row,font=("arial",12,"bold"))
                     lbl.place(x=75,y=50)
-# ======================== Address =======================
-                    my_cursor=conn.cursor()  
-                    query=("Select Address from customer where mobile=%s")
-                    value=(self.var_contact.get(),)
-                    my_cursor.execute(query,value)  
-                    row=my_cursor.fetchone()
                     
-                    lblAddress=Label(showDataframe,text="Email:",font=("arial",12,"bold"))
-                    lblAddress.place(x=0,y=75)
-                            
-                    lbl=Label(showDataframe,text=row,font=("arial",12,"bold"))
-                    lbl.place(x=75,y=75)
-
 # ======================================== Nationality ================
 
                     my_cursor=conn.cursor()  
@@ -413,26 +400,36 @@ class Roombooking:
                     row=my_cursor.fetchone()
                     
                     lblNationality=Label(showDataframe,text="Nationality:",font=("arial",12,"bold"))
-                    lblNationality.place(x=0,y=100)
+                    lblNationality.place(x=0,y=75)
                             
                     lbl=Label(showDataframe,text=row,font=("arial",12,"bold"))
-                    lbl.place(x=85,y=100)
-                    self.room_table.pack(fill=BOTH,expand=1)
+                    lbl.place(x=85,y=75)
+                    self.room_table.pack(fill=BOTH,expand=1)                    
+                    
+# ======================== Address =======================
+                    my_cursor=conn.cursor()  
+                    query=("Select Address from customer where mobile=%s")
+                    value=(self.var_contact.get(),)
+                    my_cursor.execute(query,value)  
+                    row=my_cursor.fetchone()
+                    
+                    lblAddress=Label(showDataframe,text="Email:",font=("arial",12,"bold"))
+                    lblAddress.place(x=1,y=100)
+                            
+                    lbl=Label(showDataframe,text=row,font=("arial",12,"bold"))
+                    lbl.place(x=75,y=100)
                     
     # search system
     def search(self):
       conn = mysql.connector.connect(host="localhost", username="root", password="Vikash@123", database="management")
       my_cursor = conn.cursor()
-      search_by = self.search_var.get()
-      search_value = self.txt_search.get()
-
-      query = f"SELECT * FROM row WHERE {search_by} LIKE %s"
-      my_cursor.execute(query, (f"%{search_value}%",))
-      rows = my_cursor.fetchall()
+      
+      my_cursor.execute("select * from row where"+str(self.search_var.get())+" LIKE '%"+str(self.txt_search.get())+"%'")
+      rows=my_cursor.fetchall()
       if len(rows) != 0:
         self.room_table.delete(*self.room_table.get_children())
-        for row in rows:
-            self.room_table.insert("", END, values=row)
+        for i in rows:
+            self.room_table.insert("", END, values=i)
         conn.commit()
       conn.close()
                                        
@@ -455,29 +452,85 @@ class Roombooking:
        self.var_paidtaxt.set(Tax)
        self.var_actualtotal.set(ST)
        self.var_total.set(TT)
-      
        
-     
-     
-        
-    def reset(self):
-      self.var_contact.set(""),
-      self.var_checkin.set(""),
-      self.var_checkout.set(""),
-      self.var_roomtype.set(""),
-      self.var_roomavailable.set(""),
-      self.var_meal.set(""),
-      self.var_noofdays.set(""),
-      self.var_paidtaxt.set(""),
-      self.var_actualtotal.set(""),
-      self.var_total.set("")
-
-            
-                                    
-                                                        
-            
-        
-        
+     elif(self.var_meal.get()=="Breakfast" and self.var_roomtype.get()=="Single"):
+       q1=float(300)
+       q2=float(700)
+       q3=float(self.var_noofdays.get())
+       q4=float(q1+q2)
+       q5=float(q3+q4)
+       Tax="Rs."+str("%.2f"%((q5)*0.1))
+       ST="Rs."+str("%.2f"%((q5)))
+       TT="Rs."+str("%.2f"%(q5+((q5)*0.1)))
+       self.var_paidtaxt.set(Tax)
+       self.var_actualtotal.set(ST)
+       self.var_total.set(TT)
+       
+     elif(self.var_meal.get()=="Breakfast" and self.var_roomtype.get()=="Double"):
+       q1=float(300)
+       q2=float(700)
+       q3=float(self.var_noofdays.get())
+       q4=float(q1+q2)
+       q5=float(q3+q4)
+       Tax="Rs."+str("%.2f"%((q5)*0.1))
+       ST="Rs."+str("%.2f"%((q5)))
+       TT="Rs."+str("%.2f"%(q5+((q5)*0.1)))
+       self.var_paidtaxt.set(Tax)
+       self.var_actualtotal.set(ST)
+       self.var_total.set(TT)
+      
+     elif(self.var_meal.get()=="Lunch" and self. var_roomtype.get()=="Double"):
+       q1=float(300)
+       q2=float(700)
+       q3=float(self.var_noofdays.get())
+       q4=float(q1+q2)
+       q5=float(q3+q4)
+       Tax="Rs."+str("%.2f"%((q5)*0.1))
+       ST="Rs."+str("%.2f"%((q5)))
+       TT="Rs."+str("%.2f"%(q5+((q5)*0.1)))
+       self.var_paidtaxt.set(Tax)
+       self.var_actualtotal.set(ST)
+       self.var_total.set(TT) 
+       
+     elif(self.var_meal.get()=="Lunch" and self. var_roomtype.get()=="Luxary"):
+       q1=float(300)
+       q2=float(700)
+       q3=float(self.var_noofdays.get())
+       q4=float(q1+q2)
+       q5=float(q3+q4)
+       Tax="Rs."+str("%.2f"%((q5)*0.1))
+       ST="Rs."+str("%.2f"%((q5)))
+       TT="Rs."+str("%.2f"%(q5+((q5)*0.1)))
+       self.var_paidtaxt.set(Tax)
+       self.var_actualtotal.set(ST)
+       self.var_total.set(TT)
+       
+     elif(self.var_meal.get()=="Lunch" and self. var_roomtype.get()=="Single"):
+       q1=float(300)
+       q2=float(700)
+       q3=float(self.var_noofdays.get())
+       q4=float(q1+q2)
+       q5=float(q3+q4)
+       Tax="Rs."+str("%.2f"%((q5)*0.1))
+       ST="Rs."+str("%.2f"%((q5)))
+       TT="Rs."+str("%.2f"%(q5+((q5)*0.1)))
+       self.var_paidtaxt.set(Tax)
+       self.var_actualtotal.set(ST)
+       self.var_total.set(TT)
+       
+     elif(self.var_meal.get()=="Single" and self. var_roomtype.get()=="Dinner"):
+       q1=float(500)
+       q2=float(1000)
+       q3=float(self.var_noofdays.get())
+       q4=float(q1+q2)
+       q5=float(q3+q4)
+       Tax="Rs."+str("%.2f"%((q5)*0.1))
+       ST="Rs."+str("%.2f"%((q5)))
+       TT="Rs."+str("%.2f"%(q5+((q5)*0.1)))
+       self.var_paidtaxt.set(Tax)
+       self.var_actualtotal.set(ST)
+       self.var_total.set(TT)    
+              
         
 if __name__ == '__main__':
   root=Tk()
